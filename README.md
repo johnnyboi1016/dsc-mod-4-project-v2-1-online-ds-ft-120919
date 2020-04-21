@@ -1,10 +1,19 @@
 # Mod 4 Project - Time Series Modeling - Zillow US Housing Dataset
+* Student name: John Cho
+* Student pace: full time online
+* Scheduled project review date/time: 
+* Instructor name: Rafael Carrasco
+* Blog post URL: https://medium.com/@johnnyboyee/the-new-generation-c-71035d37f67c
 
 ## Summary
 All of the Python code was performed in the following Jupyter notebooks:
 * [Cleaning.ipynb](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/Cleaning.ipynb)
 * [EDA.ipynb](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/EDA.ipynb)
 * [Models.ipynb](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/Models.ipynb)
+
+### Presentation Files:
+* [Mod 4 - Presentation.pdf](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/Mod 4 - Presentation.pdf)
+* [Mod4 Project Video.mp4](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/Mod4 Project Video.mp4)
 
 This project involved the exploration and modeling of time series for US housing prices from 1996 to 2018, averaged by zip code and provided by Zillow.com. The fundamental question posed was:
 
