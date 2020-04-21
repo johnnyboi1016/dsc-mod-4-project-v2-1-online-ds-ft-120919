@@ -1,72 +1,64 @@
+# Mod 4 Project - Time Series Modeling - Zillow US Housing Dataset
 
-# Mod 4 Project - Starter Notebook
+## Summary
+All of the Python code was performed in the following Jupyter notebooks:
+* [Cleaning.ipynb](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/Cleaning.ipynb)
+* [EDA.ipynb](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/EDA.ipynb)
+* [Models.ipynb](https://github.com/johnnyboi1016/dsc-mod-4-project-v2-1-online-ds-ft-120919/blob/master/Models.ipynb)
 
-This notebook has been provided to you so that you can make use of the following starter code to help with the trickier parts of preprocessing the Zillow dataset. 
+This project involved the exploration and modeling of time series for US housing prices from 1996 to 2018, averaged by zip code and provided by Zillow.com. The fundamental question posed was:
 
-The notebook contains a rough outline the general order you'll likely want to take in this project. You'll notice that most of the areas are left blank. This is so that it's more obvious exactly when you should make use of the starter code provided for preprocessing. 
+#### What are the top 5 best zip codes for us to invest in?
 
-**_NOTE:_** The number of empty cells are not meant to infer how much or how little code should be involved in any given step--we've just provided a few for your convenience. Add, delete, and change things around in this notebook as needed!
+To accomplish this, we chose to implement the following strategy:
 
-# Some Notes Before Starting
+1. **Initially combine the top 0.5% (~750) of various ROI measures and filter out for the zip codes that only appear in every group.**
+2. **Create additional filters for risk and resilience to keep narrowing down the list.**
+3. **Finalize selection of the top 5 zip codes for different investing risk profiles.**
 
-This project will be one of the more challenging projects you complete in this program. This is because working with Time Series data is a bit different than working with regular datasets. In order to make this a bit less frustrating and help you understand what you need to do (and when you need to do it), we'll quickly review the dataset formats that you'll encounter in this project. 
+Here are the metrics we have created:  
 
-## Wide Format vs Long Format
+`Min_Max`(ROI) - cost basis will be the lowest value in the 12 year period, final value will be the highest.  
+`1996_to_2018`(ROI) - cost basis = average price in 1996, final value = avg price in 2018.  
+`Drop` - % lost or negative ROI of the drop in value from peak to valley during the 2008 crash. We'll use a slightly wider year range from 2005 to 2013 to find the min/max.  
+`Recovery` - ROI from crash valley to the end of our 2018 timeframe.  
+`Months` - Number of months it takes to retrace back to 'break even' from the crash valley to peak again.
 
-If you take a look at the format of the data in `zillow_data.csv`, you'll notice that the actual Time Series values are stored as separate columns. Here's a sample: 
+Using these metrics, we were able to quickly narrow down to the top 10 zip codes.
 
-<img src='~/../images/df_head.png'>
+## Notable items during EDA:
 
-You'll notice that the first seven columns look like any other dataset you're used to working with. However, column 8 refers to the median housing sales values for April 1996, column 9 for May 1996, and so on. This This is called **_Wide Format_**, and it makes the dataframe intuitive and easy to read. However, there are problems with this format when it comes to actually learning from the data, because the data only makes sense if you know the name of the column that the data can be found it. Since column names are metadata, our algorithms will miss out on what dates each value is for. This means that before we pass this data to our ARIMA model, we'll need to reshape our dataset to **_Long Format_**. Reshaped into long format, the dataframe above would now look like:
+* Average home prices across the US all experienced good returns, despite the housing crash. 25/50/75 percentile values all almost or more than doubled during this 12 year period.
+* Our initial top 10 zip codes more than quintupled in value on average.
+* Standard deviation also more than doubled, indicative of a widening gap between the middle and upper class.
+* Average drop during crash was 25% and recovery from bottom to 2018 was 33% (almost exactly break even).
+* Average number of months it took to retrace from bottom of crash to bubble peak was 64 months (a little over 5 years).
 
-<img src='~/../images/melted1.png'>
+<img src="median.PNG" width="800">
+<img src="Top_ROI.PNG" width="800">
+<img src="Crash.PNG" width="700">
 
-There are now many more rows in this dataset--one for each unique time and zipcode combination in the data! Once our dataset is in this format, we'll be able to train an ARIMA model on it. The method used to convert from Wide to Long is `pd.melt()`, and it is common to refer to our dataset as 'melted' after the transition to denote that it is in long format. 
+## Modeling
 
-# Helper Functions Provided
+Performed transformations to achieve stationarity: square root, exponentially weighted rolling mean, differencing scored a p-value under 0.04 for the Dickey-Fuller test. However, the seasonal_decompose function from statsmodels came in even lower so we used the residuals to fit our SARIMAX prediction model.
 
-Melting a dataset can be tricky if you've never done it before, so you'll see that we have provided a sample function, `melt_data()`, to help you with this step below. Also provided is:
+<img src="decompose.PNG" width="700">
+<img src="decompose2.PNG" width="700">
+<img src="model.PNG" width="400">
+<img src="model2.PNG" width="700">
+<img src="model3.PNG" width="700">
+<img src="forecast_1step.PNG" width="900">
+<img src="forecast_dynamic.PNG" width="900">
+<img src="forecast_500step.PNG" width="900">
 
-* `get_datetimes()`, a function to deal with converting the column values for datetimes as a pandas series of datetime objects
-* Some good parameters for matplotlib to help make your visualizations more readable. 
+## Recommendations
+Based on our final selection criteria and additional research, we have selected the following as our top five zip codes to invest in the United States:
 
-Good luck!
+**94402 San Mateo, CA (low tax rate)**  
+**94061 Redwood City, CA (low tax rate, highest recovery ROI)**  
+**19125 Philadelphia, PA (very good price to rent ratio, highest overall ROI)**  
+**90404 Santa Monica, CA (significantly lowest number of recovery months)**  
+**90232 Culver City, CA (low entry point)**
 
-
-# Step 1: Load the Data/Filtering for Chosen Zipcodes
-
-# Step 2: Data Preprocessing
-
-
-```python
-def get_datetimes(df):
-    return pd.to_datetime(df.columns.values[1:], format='%Y-%m')
-```
-
-# Step 3: EDA and Visualization
-
-
-```python
-font = {'family' : 'normal',
-        'weight' : 'bold',
-        'size'   : 22}
-
-matplotlib.rc('font', **font)
-
-# NOTE: if you visualizations are too cluttered to read, try calling 'plt.gcf().autofmt_xdate()'!
-```
-
-# Step 4: Reshape from Wide to Long Format
-
-
-```python
-def melt_data(df):
-    melted = pd.melt(df, id_vars=['RegionName', 'City', 'State', 'Metro', 'CountyName'], var_name='time')
-    melted['time'] = pd.to_datetime(melted['time'], infer_datetime_format=True)
-    melted = melted.dropna(subset=['value'])
-    return melted.groupby('time').aggregate({'value':'mean'})
-```
-
-# Step 5: ARIMA Modeling
-
-# Step 6: Interpreting Results
+## Future Work
+See if our predictions ring true by getting updated housing data from Zillow!
